@@ -7,10 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using StudentAdminPortal.API.DataModels;
+using StudentAdminPortal.API.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace StudentAdminPortal.API
 {
@@ -28,6 +29,10 @@ namespace StudentAdminPortal.API
         {
 
             services.AddControllers();
+            services.AddScoped<IStudentRepository, SqlStudentRepository>();
+            services.AddDbContext<StudentAdminContext>(
+                options => options.UseSqlServer(Configuration.GetConnectionString("StudentAdminPortalDb")));
+            services.AddAutoMapper(typeof(Startup).Assembly);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StudentAdminPortal.API", Version = "v1" });
