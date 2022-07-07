@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using StudentAdminPortal.API.DomainModels;
+using DataModels = StudentAdminPortal.API.DataModels;
 
 namespace StudentAdminPortal.API.Controllers
 {
@@ -30,6 +31,7 @@ namespace StudentAdminPortal.API.Controllers
             
 
         }
+
         [HttpGet]
         [Route("[Controller]/{studentId:guid}")]
         public async Task<IActionResult> GetStudentAsync([FromRoute] Guid studentId)
@@ -42,6 +44,22 @@ namespace StudentAdminPortal.API.Controllers
             var domainModelStudent = _mapper.Map<Student>(student);
             return Ok(domainModelStudent);
 
+        }
+
+        [HttpPut]
+        [Route("[Controller]/{studentId:guid}")]
+        public async Task<IActionResult> UpdateStudentAsync([FromRoute] Guid studentId, [FromBody] UpdateStudentRequest request)
+        {
+            if(await _studentRepository.Exists(studentId))
+            {
+                //Update student details
+                var updatedStudent = await _studentRepository.UpdateStudent(studentId, _mapper.Map<DataModels.Student>(request));
+                if(updatedStudent != null)
+                {
+                    return Ok(_mapper.Map<Student>(updatedStudent));
+                }
+            }
+            return NotFound();
         }
     }
 }
