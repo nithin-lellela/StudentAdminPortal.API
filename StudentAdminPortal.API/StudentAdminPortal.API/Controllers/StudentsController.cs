@@ -19,39 +19,28 @@ namespace StudentAdminPortal.API.Controllers
             this._studentRepository = studentRepository;
             this._mapper = mapper;
         }
+        
         [HttpGet]
         [Route("[Controller]")]
-        public async Task<IActionResult> GetAllStudents()
+        public async Task<IActionResult> GetAllStudentsAsync()
         {
             var students = await _studentRepository.GetStudentsAsync();
             var domainModelStudents = _mapper.Map<List<Student>>(students);
             return Ok(domainModelStudents);
             
-            /*foreach(var student in students)
+
+        }
+        [HttpGet]
+        [Route("[Controller]/{studentId:guid}")]
+        public async Task<IActionResult> GetStudentAsync([FromRoute] Guid studentId)
+        {
+            var student = await _studentRepository.GetStudentAsync(studentId);
+            if (student == null)
             {
-                domainModelStudents.Add(new Student()
-                {
-                    Id = student.Id,
-                    FirstName = student.FirstName,
-                    LastName = student.LastName,
-                    DateOfBirth = student.DateOfBirth,
-                    Email = student.Email,
-                    Mobile = student.Mobile,
-                    ProfileImageUrl= student.ProfileImageUrl,
-                    GenderId = student.GenderId,
-                    Gender = new Gender()
-                    {
-                        Id = student.Gender.Id,
-                        Description = student.Gender.Description
-                    },
-                    Address = new Address()
-                    {
-                        Id = student.Address.Id,
-                        PhysicalAddress = student.Address.PhysicalAddress,
-                        PostalAddress = student.Address.PostalAddress,
-                    }
-                });
-            }*/
+                return NotFound();
+            }
+            var domainModelStudent = _mapper.Map<Student>(student);
+            return Ok(domainModelStudent);
 
         }
     }
